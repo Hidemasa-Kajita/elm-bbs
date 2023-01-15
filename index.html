@@ -10588,20 +10588,44 @@ var $elm$browser$Browser$sandbox = function (impl) {
 			view: impl.view
 		});
 };
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
 var $author$project$Form$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'Input') {
-			var input = msg.a;
-			return _Utils_update(
-				model,
-				{input: input});
-		} else {
-			return _Utils_update(
-				model,
-				{
-					input: '',
-					memos: A2($elm$core$List$cons, model.input, model.memos)
-				});
+		switch (msg.$) {
+			case 'Input':
+				var input = msg.a;
+				return _Utils_update(
+					model,
+					{input: input});
+			case 'Delete':
+				var memo = msg.a;
+				return _Utils_update(
+					model,
+					{
+						memos: A2(
+							$elm$core$List$filter,
+							function (v) {
+								return !_Utils_eq(memo, v);
+							},
+							model.memos)
+					});
+			default:
+				return _Utils_update(
+					model,
+					{
+						input: '',
+						memos: A2($elm$core$List$cons, model.input, model.memos)
+					});
 		}
 	});
 var $author$project$Form$Input = function (a) {
@@ -10640,13 +10664,33 @@ var $elm$html$Html$Events$onSubmit = function (msg) {
 			$elm$html$Html$Events$alwaysPreventDefault,
 			$elm$json$Json$Decode$succeed(msg)));
 };
+var $author$project$Form$Delete = function (a) {
+	return {$: 'Delete', a: a};
+};
 var $author$project$Form$viewMemo = function (memo) {
 	return A2(
-		$elm$html$Html$li,
+		$elm$html$Html$div,
 		_List_Nil,
 		_List_fromArray(
 			[
-				$elm$html$Html$text(memo)
+				A2(
+				$elm$html$Html$li,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(memo)
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Form$Delete(memo))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Delete')
+					]))
 			]));
 };
 var $author$project$Form$view = function (model) {
@@ -10692,7 +10736,7 @@ var $author$project$Form$view = function (model) {
 var $author$project$Form$main = $elm$browser$Browser$sandbox(
 	{init: $author$project$Form$init, update: $author$project$Form$update, view: $author$project$Form$view});
 _Platform_export({'Form':{'init':$author$project$Form$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Form.Msg","aliases":{},"unions":{"Form.Msg":{"args":[],"tags":{"Input":["String.String"],"Submit":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Form.Msg","aliases":{},"unions":{"Form.Msg":{"args":[],"tags":{"Input":["String.String"],"Delete":["String.String"],"Submit":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));
 
   var app = Elm.Form.init({ node: document.getElementById("elm") });
 }

@@ -4,7 +4,8 @@ import Browser
 import Counter exposing (Msg, update)
 import Html exposing (Html, button, div, input, li, text, ul)
 import Html.Attributes exposing (disabled, value)
-import Html.Events exposing (onInput, onSubmit)
+import Html.Events exposing (onClick, onInput, onSubmit)
+import List exposing (filter)
 
 
 main : Program () Model Msg
@@ -31,6 +32,7 @@ init =
 
 type Msg
     = Input String
+    | Delete String
     | Submit
 
 
@@ -39,6 +41,9 @@ update msg model =
     case msg of
         Input input ->
             { model | input = input }
+
+        Delete memo ->
+            { model | memos = List.filter (\v -> memo /= v) model.memos }
 
         Submit ->
             { model
@@ -60,6 +65,12 @@ view model =
         ]
 
 
-viewMemo : String -> Html msg
+viewMemo : String -> Html Msg
 viewMemo memo =
-    li [] [ text memo ]
+    div []
+        [ li []
+            [ text memo ]
+        , button
+            [ onClick (Delete memo) ]
+            [ text "Delete" ]
+        ]
